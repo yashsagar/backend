@@ -1,12 +1,13 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import dotenv from "dotenv";
+import dotenvFlow from "dotenv-flow";
+import { connectDB } from "./projects/roc8/config/db.js";
 
 // projects related import
 import { roc8Router } from "./projects/index.route.js";
 
-dotenv.config();
+dotenvFlow.config();
 
 const app = express();
 
@@ -25,9 +26,20 @@ app.use((req, res, next) => {
 //this is only for development purpose all https related logic have to configure in nginx
 
 if (process.env.NODE_ENV === "development") {
+  const allowedOriginPattern =
+    /^https?:\/\/(.*\.)?yashsagar\.in$|^http:\/\/localhost:5173$/;
   app.use(
     cors({
-      origin: ["http://localhost:5173"],
+      origin: (origin, callback) => {
+        // Check if the origin is allowed or if it is undefined (no Origin header)
+        if (!origin || allowedOriginPattern.test(origin)) {
+          callback(null, origin); // Allow the origin
+        } else {
+          callback(new Error("Not allowed by CORS")); // Disallow the origin
+        }
+      },
+      methods: "GET, POST, OPTIONS, PUT, DELETE", // Allow only these methods
+      allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true, // Allows cookies to be sent
     })
   );
@@ -56,4 +68,5 @@ app.get("/test", (req, res) => {
 
 app.listen(process.env.PORT, () => {
   console.log(`sever started on : http://localhost:${process.env.PORT}`);
+  connectDB();
 });

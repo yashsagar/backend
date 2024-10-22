@@ -2,9 +2,11 @@ import express from "express";
 import { authRoutes, dbRoutes } from "./routes/index.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import { maintainMongoconnection, roc8DbConnection } from "./config/db.js";
+// import { roc8DbConnection } from "./config/db.js";
+import { ENV_VARS } from "./config/envVars.js";
 
-roc8DbConnection.openUri(process.env.ROC8_MONGO_URI);
+// roc8DbConnection.openUri(ENV_VARS.MONGO_URI);
+
 const router = express.Router();
 
 // router.use((req, res, next) => {
@@ -14,11 +16,13 @@ const router = express.Router();
 
 router.use(
   session({
-    // store: new MongoStore({
-    //   clientPromise: roc8DbConnection.getClient(), // Use the session database connection which already created using mongoose.connect() or mongoose.createConnection()
-    //   collection: "sessions", // Optional: Specify the sessions collection name
-    //   ttl: 14 * 24 * 60 * 60, // 14 days session expiration
-    // }),
+    store: new MongoStore({
+      // client: roc8DbConnection.getClient(), // Use the session database connection which already created using mongoose.connect() or mongoose.createConnection()
+
+      mongoUrl: ENV_VARS.MONGO_URI,
+      collection: "sessions", // Optional: Specify the sessions collection name
+      ttl: 14 * 24 * 60 * 60, // 14 days session expiration
+    }),
     secret: "aswdrfgttE4Ba0cfD@",
     resave: false,
     saveUninitialized: false,

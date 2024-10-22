@@ -2,7 +2,7 @@
   "apps": [
     {
       "name": "backend",
-      "script": "app.js",
+      "script": "server.js",
       "instances": 1,
       "watch": true,
       "env": {

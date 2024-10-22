@@ -1,3 +1,7 @@
+import dotenvFlow from "dotenv-flow";
+
+dotenvFlow.config();
+
 export const ENV_VARS = {
   MONGO_URI: process.env.ROC8_MONGO_URI,
   PORT: process.env.PORT || 3000,
